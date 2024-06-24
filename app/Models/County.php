@@ -11,5 +11,5 @@ class County extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['county_name'];
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mp;
 use App\Models\County;
+use App\Models\Ward;
 use App\Models\Constituency;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -14,37 +15,59 @@ class MpController extends Controller
 {
     public function index()
     {
-        $mps = MP::where('voted_yes', true)->get();
-        return view('mps.index', compact('mps'));
+        $mps = Mp::where('voted_yes', true)->get();
+        $counties = County::all(); // Fetch all counties to pass to the view
+        return view('mps.index', compact('mps', 'counties'));
     }
 	
-	public function recallForm(Mp $mp)
+    public function recallForm(Mp $mp)
     {
-        return view('mps.recall', compact('mp'));
+        $counties = County::all();
+        // Load constituencies and wards for the first county and first constituency initially (if needed)
+        $constituencies = [];
+        $wards = [];
+        if (!empty($counties[0])) {
+            $constituencies = Constituency::where('county_id', $counties[0]->id)->get();
+            if (!empty($constituencies[0])) {
+                $wards = Ward::where('constituency_id', $constituencies[0]->id)->get();
+            }
+        }
+        return view('mps.recall', compact('mp', 'counties', 'constituencies', 'wards'));
     }
+
+    public function fetchConstituencies($countyId)
+    {
+        $constituencies = Constituency::where('county_id', $countyId)->get();
+        return response()->json($constituencies);
+    }
+    
+
+    public function fetchWards($constituencyId)
+    {
+        $wards = Ward::where('constituency_id', $constituencyId)->get();
+        return response()->json($wards);
+    }
+    
+
 
     public function show(Mp $mp)
     {
-        // Retrieve signatures associated with the MP using query builder
-        $signatures = $mp->signatures()->get(); // Adjust according to your application logic
-
-        // Calculate recall rate based on signatures count
+        $counties = County::all();
+        $signatures = $mp->signatures()->get();
         $signaturesCount = $signatures->count();
         $recallRate = ($signaturesCount / 1000000) * 100;
 
-        return view('mps.show', compact('mp', 'signatures', 'recallRate'));
+        return view('mps.show', compact('mp', 'signatures', 'recallRate','counties'));
     }
 	
 	public function showSignatures(Mp $mp)
 	{
+        $counties = County::all();
 		$mp->load('signatures'); 
 		$signaturesCount = $mp->signatures->count();
 		$recallRate = ($signaturesCount / 1000000) * 100;
 
-		// Debugging statements
-		dd(compact('mp', 'recallRate', 'signaturesCount'));
-
-		return view('mps.show', compact('mp', 'recallRate', 'signaturesCount'));
+		return view('mps.show', compact('mp', 'recallRate', 'signaturesCount','counties'));
 	}
 
 

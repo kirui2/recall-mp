@@ -11,5 +11,5 @@ class Constituency extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'county_id'];
+    protected $fillable = ['constituency_name', 'county_id'];
 }

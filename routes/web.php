@@ -11,13 +11,20 @@ Route::get('/mps/{mp}', [MpController::class, 'show'])->name('mps.show');
 
 // Route for showing signatures
 Route::get('/mps/{mp}/signatures', [MpController::class, 'showSignatures'])->name('mps.show-signatures');
+Route::get('/mps/{mp}/recall', [MpController::class, 'recallForm'])->name('mps.recall-form');
 
 // Route for downloading PDF
 Route::get('/mps/{mp}/pdf', [MpController::class, 'downloadPdf'])->name('mps.download-pdf');
 
 // Route for the recall form
-Route::get('/mps/{mp}/recall', [MpController::class, 'recallForm'])->name('mps.recall-form');
 Route::post('/mps/{mp}/recall', [SignatureController::class, 'store'])->name('mps.recall-store');
+// Route::get('/fetch-constituencies/{county}', [SignatureController::class, 'fetchConstituencies']);
+// Route::get('/fetch-wards/{constituency}', [SignatureController::class, 'fetchWards']);
+
+Route::get('/fetch-constituencies/{countyId}', [App\Http\Controllers\MpController::class, 'fetchConstituencies'])->name('fetch.constituencies');
+Route::get('/fetch-wards/{constituencyId}', [App\Http\Controllers\MpController::class, 'fetchWards'])->name('fetch.wards');
+
+
 
 // Route for storing signatures
 Route::post('/signatures', [SignatureController::class, 'store'])->name('signatures.store');

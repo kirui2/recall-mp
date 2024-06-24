@@ -19,9 +19,9 @@
                     <tr>
                         <td>{{ $mp->name }}</td>
                         <td>{{ $mp->role }}</td>
-                        <td>{{ $mp->county->county_id }}</td>
-                        <td>{{ $mp->constituency->name }}</td>
-                        <td>{{ ($mp->recall_count / 1000000) * 100 }}%</td>
+                        <td>{{ optional($mp->county)->name ?? 'N/A' }}</td>
+                        <td>{{ optional($mp->subcounties)->name ?? 'N/A' }}</td>
+                        <td>{{ (intval($mp->recall_count) / 1000000) * 100 }}%</td>
                         <td>
                             <a href="{{ route('mps.show', $mp->id) }}" class="btn btn-primary btn-sm">View</a>
                             <a href="{{ route('mps.show-signatures', $mp->id) }}" class="btn btn-primary btn-sm">View Signatures</a>
